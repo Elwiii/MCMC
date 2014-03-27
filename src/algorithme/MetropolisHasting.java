@@ -11,6 +11,7 @@ import tool.Alea;
 /**
  *
  * @author nikolai
+ * @param <E>
  */
 public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
 
@@ -29,13 +30,14 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
 
         // on crée une matrice de transition tel que mcSimulation soit facile à simuler
         mcSimulation.intializeTransitionMatrix(MarkovChain.RANDOM /* EASY_TO_SIMULATE */);
-        Double[] probas = new Double[stats.length];
+//        Double[] probas = new Double[stats.length];
 
         // on choisit le premier état au hasard
-        for (int i = 0; i < probas.length; i++) {
-            probas[i] = 1. / probas.length;
-        }
-        int x = Alea.uniforme(probas);
+//        for (int i = 0; i < probas.length; i++) {
+//            probas[i] = 1. / probas.length;
+//        }
+//        int x = Alea.uniforme(probas);
+        int x = Alea.getRand().nextInt(stats.length);
         mcSimulation.setCurrentState(x);
 
         // i <- 0

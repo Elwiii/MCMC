@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public class Alea {
 
-    public static final Random rand;
+    private static final Random rand;
 
     static {
         rand = new Random();
@@ -65,6 +65,13 @@ public class Alea {
 
         }
         return distribution;
+    }
+
+    /**
+     * @return the rand
+     */
+    public static Random getRand() {
+        return rand;
     }
 
 }
