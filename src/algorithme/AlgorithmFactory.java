@@ -32,8 +32,13 @@ public class AlgorithmFactory<E> {
     
     public AlgorithmMCMC getAlgorithm(int typeAlgo,E[] states, double[] distribution){
         switch(typeAlgo){
-            // TODO
+            case METROPOLIS_HASTING :
+                return new MetropolisHasting(states, distribution);
+            case GIBBS :
+                // TODO
+                return null;
+            default:
+                return null;
         }
-        return null;
     }
 }

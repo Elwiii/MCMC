@@ -11,6 +11,7 @@ import markovchain.MarkovChain;
 /**
  *
  * @author nikolai
+ * @param <E>
  */
 public class Gibbs<E> extends AlgorithmMCMC<E> {
 
