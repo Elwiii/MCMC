@@ -40,9 +40,19 @@ public class AleaTest {
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
-     @Test
-     public void test() {
-         Double[] probas = {1./3.,1./3.,1./3.};
-         System.out.println("resultat  : "+Alea.uniforme(probas));
+//     @Test
+//     public void test() {
+//         Double[] probas = {1./3.,1./3.,1./3.};
+//         System.out.println("resultat  : "+Alea.uniforme(probas));
+//     }
+
+        @Test
+     public void testBernouilli() {
+        System.out.println("resultat  : "+Alea.bernouilli(0.1));
+            for (double i = 0; i < 1; i=i+0.001) {
+                System.out.println(""+i+" : "+Alea.bernouilli(i));
+                
+            }
      }
+
 }

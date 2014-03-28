@@ -51,7 +51,7 @@ public class Alea {
      * @return
      */
     public static boolean bernouilli(double proba) {
-        return uniforme(proba) == 0;
+        return uniforme(proba,1-proba) == 0;
     }
 
     public static Double[] createRandomDistribution(int size, int precision) {

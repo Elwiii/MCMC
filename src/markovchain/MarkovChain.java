@@ -61,10 +61,29 @@ public class MarkovChain<E> {
     public int walk() {
         Double[] probas = new Double[transitionMatrix[0].length];
         System.arraycopy(transitionMatrix[currentState], 0, probas, 0, probas.length);
-        System.out.println("colonne : " + Arrays.asList(probas));
+//        System.out.println("colonne : " + Arrays.asList(probas));
         return currentState = Alea.uniforme(probas);
     }
 
+    @Override
+    public String toString(){
+        String res = "\n";
+//        for (int i = 0; i < states.length; i++) {
+//            res += states[i]+"";
+//        }
+        res += "\n";
+        for (int i = 0; i < transitionMatrix.length; i++) {
+            res += states[i];
+            for (int j = 0; j < transitionMatrix[0].length; j++) {
+                res += "\t"+transitionMatrix[i][j];
+//                res += String.format("%5d", transitionMatrix[i][j]);
+            }
+            res+="\n";
+        }
+        return res;
+    }
+    
+    
     /**
      * @return the currentState
      */

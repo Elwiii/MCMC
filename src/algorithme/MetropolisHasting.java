@@ -24,6 +24,7 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
 
     @Override
     public MarkovChain constructChain() throws Exception {
+        System.out.println("Constructing chain ...");
         MarkovChain mcResultante = new MarkovChain(stats);
         Double[][] transitionResultante = new Double[stats.length][stats.length];
         MarkovChain mcSimulation = new MarkovChain(stats);
@@ -45,18 +46,23 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
 
         // on boucle pour remplire la matrice de transition de mcResultante
         while (!conditionArret()) {
+//            System.out.println("while ...");
             int xtilde = mcSimulation.walk();
             // on calcul alpha
             double d = (distribution[xtilde] / (double)distribution[x]) * (mcSimulation.getTransitionMatrix()[x][xtilde] / (double)mcSimulation.getTransitionMatrix()[xtilde][x]);
             double alpha = Math.min(1., d);
+//            System.out.println("alpha : "+alpha);
             // acceptation ou rejet ?
             boolean bernouilli = Alea.bernouilli(alpha);
             // on met à jouer la matrice de transition de mcResultante (i.e. on construit la châine de markov)
             if (bernouilli) {
+//                System.out.println("flag1");
                 //acceptation
                 transitionResultante[x][xtilde] = alpha;
                 x = xtilde;
+//                System.exit(2);
             } else {
+//                System.exit(1);
                 //rejet on fait rien
             }
             i++;
@@ -68,7 +74,7 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
     @Override
     public boolean conditionArret() {
         // TODO
-        return i < 10;
+        return i > 4;
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
