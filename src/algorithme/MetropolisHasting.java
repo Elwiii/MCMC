@@ -9,7 +9,7 @@ import markovchain.MarkovChain;
 import tool.Alea;
 
 /**
- *
+ * @toto test
  * @author nikolai
  * @param <E>
  */

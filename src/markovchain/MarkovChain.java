@@ -55,7 +55,7 @@ public class MarkovChain<E> {
     }
 
     /**
-     *
+     * @todo test
      * @return l'indice du nouvel état courant
      */
     public int walk() {

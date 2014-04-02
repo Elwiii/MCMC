@@ -21,7 +21,7 @@ public class Alea {
 
     /**
      * somme probas = 1 needed
-     *
+     * @todo test
      * @param probas
      * @return l'indice i du tableau correspond à l'evenement realisé de proba
      * probas[i]
@@ -46,7 +46,7 @@ public class Alea {
     }
 
     /**
-     *
+     * @todo test
      * @param proba
      * @return
      */
