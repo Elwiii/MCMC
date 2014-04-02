@@ -27,10 +27,12 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
         System.out.println("Constructing chain ...");
         MarkovChain mcResultante = new MarkovChain(stats);
         Double[][] transitionResultante = new Double[stats.length][stats.length];
+//        afficher(transitionResultante, stats.length, stats.length);
         MarkovChain mcSimulation = new MarkovChain(stats);
 
         // on crée une matrice de transition tel que mcSimulation soit facile à simuler
         mcSimulation.intializeTransitionMatrix(MarkovChain.RANDOM /* EASY_TO_SIMULATE */);
+        System.out.println("Matrice initialisation McSimul : " + mcSimulation.toString());
 //        Double[] probas = new Double[stats.length];
 
         // on choisit le premier état au hasard
@@ -55,6 +57,7 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
             // acceptation ou rejet ?
             boolean bernouilli = Alea.bernouilli(alpha);
             // on met à jouer la matrice de transition de mcResultante (i.e. on construit la châine de markov)
+
             if (bernouilli) {
 //                System.out.println("flag1");
                 //acceptation
@@ -77,4 +80,12 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
         return i > 4;
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    public void afficher(Double[][] tableau, int x, int y){
+        for (int j = 0; j < x; j++) {
+            for (int k = 0; k < y; k++) {
+                System.out.print(tableau[x][y] + "|");
+            }
+        }
+    } 
 }

@@ -18,8 +18,8 @@ import markovchain.MarkovChain;
  */
 public class Main {
     public static void main(String[] args){
-        Integer[] states = {0,1,2};
-        double[] distribution = {1./3.,1./2.,1./5.};
+        Integer[] states = {0,1,2,3,4};
+        double[] distribution = {0.1, 0.1, 0.3, 0.4, 0.1};
         AlgorithmMCMC<Integer> algo = AlgorithmFactory.getInstance().getAlgorithm(AlgorithmFactory.METROPOLIS_HASTING,states,distribution);
         try {
             MarkovChain mc = algo.constructChain();

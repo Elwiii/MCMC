@@ -45,7 +45,7 @@ public class MarkovChain<E> {
                 break;
             case RANDOM:
                 for (int i = 0; i < states.length; i++) {
-                    transitionMatrix[i] = Alea.createRandomDistribution(states.length, 10000);
+                    transitionMatrix[i] = Alea.createRandomDistribution(states.length, 100);
                 }
 
                 break;
