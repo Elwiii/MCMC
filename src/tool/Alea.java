@@ -55,15 +55,27 @@ public class Alea {
     }
 
     public static Double[] createRandomDistribution(int size, int precision) {
+//        Double[] distribution = new Double[size];
+//        for (int i = 0; i < precision; i++) {
+//            int ir =rand.nextInt(size);
+//            distribution[ir] = distribution[ir] == null ? 1 : distribution[ir] + 1;
+//        }
+//        for (int i = 0; i < distribution.length; i++) {
+//            distribution[i] /= (double) precision;
+//
+//        }
+//        return distribution;
         Double[] distribution = new Double[size];
-        for (int i = 0; i < precision; i++) {
-            int ir =rand.nextInt(size);
-            distribution[ir] = distribution[ir] == null ? 1 : distribution[ir] + 1;
+        double somme = 0;
+        for (int i = 0; i < distribution.length; i++) {
+            double ir = rand.nextInt();
+            somme += ir;
+            distribution[i] = ir;
         }
         for (int i = 0; i < distribution.length; i++) {
-            distribution[i] /= (double) precision;
-
+            distribution[i] /= somme;
         }
+        
         return distribution;
     }
 
