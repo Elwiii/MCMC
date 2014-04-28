@@ -5,8 +5,6 @@
  */
 package algorithme;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import markovchain.MarkovChain;
 import tool.Alea;
 import tool.Myst;
@@ -37,7 +35,7 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
                 transitionResultante[j][k] = MarkovChain.UNDEF_PROBA;
             }
         }
-        
+
         MarkovChain mcSimulation = new MarkovChain(stats);
 
         // on crée une matrice de transition tel que mcSimulation soit facile à simuler
@@ -48,8 +46,8 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
         int x_previous = Alea.getRand().nextInt(stats.length);
         mcSimulation.setCurrentStateIndice(x_previous);
 
-        System.out.println("Etat de départ : "+x_previous);
-        
+        System.out.println("Etat de départ : " + x_previous);
+
         // i <- 0
         /*int */ i = 0;
 
@@ -58,9 +56,15 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
             System.out.println("----------------  " + i + "  -------------------");
             // On simule xtilte <- q(x|xi-1)
             int xtilde = mcSimulation.walk();
+
             // on calcul alpha
-            double d = (distribution[xtilde] / (double) distribution[x_previous]) *
-                    (mcSimulation.getTransitionMatrix()[x_previous][xtilde] / (double) mcSimulation.getTransitionMatrix()[xtilde][x_previous]); // == 1 si symétrique
+            double diviseur = (mcSimulation.getTransitionMatrix()[x_previous][xtilde] / (double) mcSimulation.getTransitionMatrix()[xtilde][x_previous]);
+            if(Math.abs(diviseur -1)>0.001){
+                System.err.println("Matrice de simulation non symetrique");
+                System.exit(-1);
+            }
+            double d = (distribution[xtilde] / (double) distribution[x_previous])
+                    * diviseur; // == 1 si symétrique
             double alpha = Math.min(1., d);
             // acceptation ou rejet ?
             System.out.println("d : " + d);
@@ -69,7 +73,7 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
             if (Alea.bernouilli(alpha)) {
                 //acceptation
                 transitionResultante[x_previous][xtilde] = alpha;
-//                transitionResultante[xtilde][x_previous] = alpha;
+                // transitionResultante[xtilde][x_previous] = alpha;
                 x_previous = xtilde;
             } else {
                 //rejet on fait rien
@@ -80,7 +84,7 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
 
         // on définit la matrice de transition de la mc généré avec la matrice transition resultante
         mcResultante.setTransitionMatrix(transitionResultante);
-        
+
         return mcResultante;
     }
 

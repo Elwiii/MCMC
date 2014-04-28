@@ -6,6 +6,7 @@
 package markovchain;
 
 import Jama.Matrix;
+import java.util.Arrays;
 import java.util.Random;
 import tool.Alea;
 import tool.Myst;
@@ -34,8 +35,9 @@ public class MarkovChain<E> {
      * l'état d'indice j
      *
      */
-    public final static int EASY_TO_SIMULATE = 0;
+    public final static int RANDOM_SYMETRIC = 0;
     public final static int RANDOM = 1;
+    public final static int RANDOM_GAUSSIAN = 2;
 
     public MarkovChain(double[][] transitionMatrix, E[] states) {
         this.transitionMatrix = transitionMatrix;
@@ -58,8 +60,18 @@ public class MarkovChain<E> {
 
     public void intializeTransitionMatrix(int type) throws Exception {
         switch (type) {
-            case EASY_TO_SIMULATE:
-                // TODO
+            case RANDOM_GAUSSIAN : 
+                break;
+            case RANDOM_SYMETRIC:
+                int j = 0;
+                while (j < states.length) {
+                    double[] ligne = Alea.createRandomDistribution(states.length - j, 1000);
+                    for (int k = 0; k < states.length - j; k++) {
+                        transitionMatrix[j][j+k] = ligne[k];
+                        transitionMatrix[j+k][j] = ligne[k];
+                    }
+                    j++;
+                }
                 break;
             case RANDOM:
                 for (int i = 0; i < states.length; i++) {
@@ -71,15 +83,14 @@ public class MarkovChain<E> {
         }
     }
 
-    
     public void computeStationaryDistribution(int puissance, double precision) throws PeriodiqueOrReductibleMatrix {
         Matrix m = new Matrix(transitionMatrix);
         Matrix avantDerniereMatrice;
 
         Matrix infinite = m.copy();
-        
+
         for (int i = 0; i < puissance - 1; i++) {
-           infinite = infinite.times(m);
+            infinite = infinite.times(m);
         }
 
         avantDerniereMatrice = infinite.copy();
@@ -132,7 +143,7 @@ public class MarkovChain<E> {
          * on boucle tant qu'on atteint pas la stabilité
          */
         while (!stability && i < max_time) {
-            System.out.println("i : "+i);
+            System.out.println("i : " + i);
             Myst.afficherMatrice(infinite.getArray());
             temp = infinite.copy();
             infinite = infinite.times(m);//arrayTimesEquals(m);
@@ -143,7 +154,7 @@ public class MarkovChain<E> {
 
         if (i == max_time) {
             throw new PeriodiqueOrReductibleMatrix();
-        }else{
+        } else {
 //            System.out.println("Nombre de carré avant stabilité : "+(i+1));
         }
 

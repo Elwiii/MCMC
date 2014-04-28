@@ -34,6 +34,14 @@ public class Myst {
     }
     
     
+    public static void afficherTableau(double[] tab){
+        System.out.print("|");
+        for (int i = 0; i < tab.length; i++) {
+            System.out.print(""+tab[i]+"|");
+        }
+        System.out.println("");
+    }
+    
     /**
      * Compare deux matrices
      * @param a
