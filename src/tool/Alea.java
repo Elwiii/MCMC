@@ -74,11 +74,34 @@ public class Alea {
         return distribution;
     }
 
+    //@todo tester
+    public boolean isProbabilistMatrix(double[][] matrix, double precision){
+        boolean isProbabilist = true;
+        int i = 0;
+        while(isProbabilist && i < matrix.length){
+            double somme = 0.0;
+            for (int j = 0; j < matrix[i].length; j++) {
+                somme +=matrix[i][j];
+                
+            }
+            isProbabilist = (Math.abs(somme-1) < precision);
+            i++;
+        }
+        
+        return isProbabilist;
+    }
+    
+    
+    
+    
+    
     /**
      * @return the rand
      */
     public static Random getRand() {
         return rand;
     }
+    
+    
 
 }

@@ -5,6 +5,7 @@
  */
 package algorithme;
 
+import java.util.ArrayList;
 import markovchain.MarkovChain;
 import tool.Alea;
 import tool.Myst;
@@ -18,6 +19,8 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
 
     int i; // todo test condistion d'arrêt
 
+    private ArrayList<Integer> sampleValueIndices;
+
     public MetropolisHasting(E[] stats, double[] distribution) {
         this.stats = stats;
         this.distribution = distribution;
@@ -26,40 +29,43 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
     @Override
     public MarkovChain constructChain() throws Exception {
         System.out.println("Constructing chain ...");
+        sampleValueIndices = new ArrayList<>();
         MarkovChain mcResultante = new MarkovChain(stats);
         double[][] transitionResultante = new double[stats.length][stats.length];
 
         // on initialize la matrice resultante avec des -1
-        for (int j = 0; j < transitionResultante.length; j++) {
-            for (int k = 0; k < transitionResultante.length; k++) {
-                transitionResultante[j][k] = MarkovChain.UNDEF_PROBA;
-            }
-        }
+//        for (int j = 0; j < transitionResultante.length; j++) {
+//            for (int k = 0; k < transitionResultante.length; k++) {
+//                transitionResultante[j][k] = MarkovChain.UNDEF_PROBA;
+//            }
+//        }
 
         MarkovChain mcSimulation = new MarkovChain(stats);
 
         // on crée une matrice de transition tel que mcSimulation soit facile à simuler
-        mcSimulation.intializeTransitionMatrix(MarkovChain.RANDOM /* EASY_TO_SIMULATE */);
+        mcSimulation.intializeTransitionMatrix(MarkovChain.RANDOM_SYMETRIC /* EASY_TO_SIMULATE */);
         System.out.println("Matrice initialisation McSimul : " + mcSimulation.toString());
 
         // on choisit l'état de départ au hasard
         int x_previous = Alea.getRand().nextInt(stats.length);
         mcSimulation.setCurrentStateIndice(x_previous);
-
+        sampleValueIndices.add(x_previous);
         System.out.println("Etat de départ : " + x_previous);
 
         // i <- 0
         /*int */ i = 0;
 
+        double[][] transitionMatrixSimulation = mcSimulation.getTransitionMatrix();
+
         // on boucle pour remplire la matrice de transition de mcResultante
         while (!conditionArret()) {
-            System.out.println("----------------  " + i + "  -------------------");
+//            System.out.println("----------------  " + i + "  -------------------");
             // On simule xtilte <- q(x|xi-1)
             int xtilde = mcSimulation.walk();
 
             // on calcul alpha
-            double diviseur = (mcSimulation.getTransitionMatrix()[x_previous][xtilde] / (double) mcSimulation.getTransitionMatrix()[xtilde][x_previous]);
-            if(Math.abs(diviseur -1)>0.001){
+            double diviseur = (transitionMatrixSimulation[x_previous][xtilde] / (double) transitionMatrixSimulation[xtilde][x_previous]);
+            if (Math.abs(diviseur - 1) > 0.001) {
                 System.err.println("Matrice de simulation non symetrique");
                 System.exit(-1);
             }
@@ -67,30 +73,49 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
                     * diviseur; // == 1 si symétrique
             double alpha = Math.min(1., d);
             // acceptation ou rejet ?
-            System.out.println("d : " + d);
-            System.out.println("alpha : " + alpha);
+//            System.out.println("d : " + d);
+//            System.out.println("alpha : " + alpha);
             // on met à jouer la matrice de transition de mcResultante (i.e. on construit la châine de markov)
             if (Alea.bernouilli(alpha)) {
                 //acceptation
-                transitionResultante[x_previous][xtilde] = alpha;
+                transitionResultante[x_previous][xtilde]++;// = alpha; // pas sur de ça en faite 
                 // transitionResultante[xtilde][x_previous] = alpha;
                 x_previous = xtilde;
+                sampleValueIndices.add(x_previous);
             } else {
                 //rejet on fait rien
             }
             i++;
-            Myst.afficherMatrice(transitionResultante);
+//            Myst.afficherMatrice(transitionResultante);
         }
 
+        System.out.println("transition resultante avant normalisation");
+        Myst.afficherMatrice(transitionResultante);
+        
+        /**
+         * normalisation ?
+         */
+        for (int j = 0; j < transitionResultante.length; j++) {
+            double somme = 0.0;
+            
+            for (int k = 0; k < transitionMatrixSimulation[j].length; k++) {
+                somme+= transitionResultante[j][k];
+            }
+            
+            for (int k = 0; k < transitionMatrixSimulation[j].length; k++) {
+                transitionResultante[j][k] /= somme;
+            }
+        }
+        
         // on définit la matrice de transition de la mc généré avec la matrice transition resultante
         mcResultante.setTransitionMatrix(transitionResultante);
-
+//        System.out.println(""+sampleValueIndices);
         return mcResultante;
     }
 
     @Override
     public boolean conditionArret() {
-        return i > 10;//10000000;
+        return i > 1000000;//10000000;
     }
 
     public static void main(String[] args) {
