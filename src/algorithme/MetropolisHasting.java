@@ -109,6 +109,10 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
         
         // on définit la matrice de transition de la mc généré avec la matrice transition resultante
         mcResultante.setTransitionMatrix(transitionResultante);
+        if(!Alea.isProbabilistMatrix(transitionResultante,0.01)){
+            System.err.print("La matrice générée n'est pas une matrice probabiliste");
+            System.exit(-2);
+        }
 //        System.out.println(""+sampleValueIndices);
         return mcResultante;
     }

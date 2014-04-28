@@ -73,9 +73,32 @@ public class Alea {
 
         return distribution;
     }
+    
+    
+    public static double esperance(double[] vecteur){
+        double esperance = 0.0;
+        for (int i = 0; i < vecteur.length; i++) {
+            esperance += vecteur[i];
+        }
+        return esperance/vecteur.length;
+    }
+    
+    public static double variance(double[] vecteur){
+        double variance  = 0.0 ;
+        double esperance = esperance(vecteur);
+        for (int i = 0; i < vecteur.length; i++) {
+            variance += Math.pow(vecteur[i] - esperance,2);
+        }
+        return variance/ vecteur.length;
+    }
+    
+    public static double ecart_type(double [] vecteur){
+        return Math.sqrt(variance(vecteur));
+    }
+    
 
     //@todo tester
-    public boolean isProbabilistMatrix(double[][] matrix, double precision){
+    public static boolean isProbabilistMatrix(double[][] matrix, double precision){
         boolean isProbabilist = true;
         int i = 0;
         while(isProbabilist && i < matrix.length){
