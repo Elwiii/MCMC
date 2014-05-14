@@ -16,21 +16,21 @@ import tool.Myst;
  * @param <E>
  */
 public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
-    
+
     int i; // todo test condistion d'arrêt
 
     private ArrayList<Integer> sampleValueIndices;
-    
+
     private double[][] transitionResultante;
-    
+
     public MetropolisHasting(E[] stats, double[] distribution) {
         this.stats = stats;
         this.distribution = distribution;
     }
-    
+
     @Override
     public MarkovChain constructChain() throws Exception {
-        System.out.println("Constructing chain ...");
+//        System.out.println("Constructing chain ...");
         sampleValueIndices = new ArrayList<>();
         MarkovChain mcResultante = new MarkovChain(stats);
         transitionResultante = new double[stats.length][stats.length];
@@ -45,17 +45,17 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
 
         // on crée une matrice de transition tel que mcSimulation soit facile à simuler
         mcSimulation.intializeTransitionMatrix(MarkovChain.RANDOM_SYMETRIC /* EASY_TO_SIMULATE */);
-        System.out.println("Matrice initialisation McSimul : " + mcSimulation.toString());
+//        System.out.println("Matrice initialisation McSimul : " + mcSimulation.toString());
 
         // on choisit l'état de départ au hasard
         int x_previous = Alea.getRand().nextInt(stats.length);
         mcSimulation.setCurrentStateIndice(x_previous);
         sampleValueIndices.add(x_previous);
-        System.out.println("Etat de départ : " + x_previous);
+//        System.out.println("Etat de départ : " + x_previous);
 
         // i <- 0
         /*int */ i = 0;
-        
+
         double[][] transitionMatrixSimulation = mcSimulation.getTransitionMatrix();
 
         // on boucle pour remplire la matrice de transition de mcResultante
@@ -71,15 +71,15 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
                 System.err.println("Matrice de simulation non symetrique");
                 System.exit(-1);
             }
-            
+
             if (diviseur < 0.00001) {
                 System.err.println("Dans la mesure où la matrice est symétrique, il n'y a pas de raison qu'on ait un d == 0");
                 System.exit(-4);
             }
-            
+
             double d = (distribution[xtilde] / (double) distribution[x_previous])
                     * diviseur; // == 1 si symétrique (ou zero)
-            
+
             double alpha = Math.min(1., d);
             // acceptation ou rejet ?
 //            System.out.println("d : " + d);
@@ -97,22 +97,20 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
             i++;
 //            Myst.afficherMatrice(transitionResultante);
         }
-        
-        System.out.println("transition resultante avant normalisation");
-        Myst.afficherMatrice(transitionResultante);
-        
-        System.out.println("Nombre d'itérations effectuées : " + (i - 1));
 
+//        System.out.println("transition resultante avant normalisation");
+//        Myst.afficherMatrice(transitionResultante);
+//        System.out.println("Nombre d'itérations effectuées : " + (i - 1));
         /**
          * normalisation ?
          */
         for (int j = 0; j < transitionResultante.length; j++) {
             double somme = 0.0;
-            
+
             for (int k = 0; k < transitionMatrixSimulation[j].length; k++) {
                 somme += transitionResultante[j][k];
             }
-            
+
             for (int k = 0; k < transitionMatrixSimulation[j].length; k++) {
                 transitionResultante[j][k] /= somme;
             }
@@ -129,7 +127,7 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
 //        System.out.println(""+sampleValueIndices);
         return mcResultante;
     }
-    
+
     @Override
     public boolean conditionArret() {
         boolean isEqualToZero = false;
@@ -144,29 +142,30 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
                 break;
             }
         }
-        
-        return i > 10000000 || (i > 100000 && !isEqualToZero);//10000000;
+
+        return i > 1000000000 || (i > 100000 && !isEqualToZero);//10000000;
 //        return i > 100000;
     }
-    
+
     public static void main(String[] args) {
         Integer[] states = {0, 1, 2};//,3,4};
         double[] distribution = {0.2, 0.5, 0.3};//, 0.4, 0.1};
         int k = 0;
-        while (k != 10000000) {
+        while (k < 10000000) {
+            System.out.println("k " + k);
             AlgorithmMCMC<Integer> algo = AlgorithmFactory.getInstance().getAlgorithm(AlgorithmFactory.METROPOLIS_HASTING, states, distribution);
-            
+
             try {
                 MarkovChain mc = algo.constructChain();
-                System.out.println("mc resultante : " + mc);
+//                System.out.println("mc resultante : " + mc);
 //            mc.computeStationaryDistributionUntilStability(0.001);
 //            System.out.println(Arrays.asList(mc.getStationary_distribution()).toString());
-                k = ((MetropolisHasting) algo).i;
             } catch (Exception ex) {
                 System.err.println(ex);
                 System.exit(1);
             }
+            k++;
         }
     }
-    
+
 }

@@ -27,7 +27,7 @@ public class MarkovChain<E> {
     public static final double UNDEF_PROBA = -1.0;
 
     public final double EPSILON = 0.001;
-    
+
     private final Random rand = new Random();
 
     /**
@@ -62,19 +62,30 @@ public class MarkovChain<E> {
 
     public void intializeTransitionMatrix(int type) throws Exception {
         switch (type) {
-            case RANDOM_GAUSSIAN : 
+            case RANDOM_GAUSSIAN:
                 break;
             case RANDOM_SYMETRIC:
-                int j = 0;
-                while (j < states.length) {
-//                    double[] ligne = Alea.createRandomDistribution(states.length - j, 1000);
-                    double[] ligne = Alea.createRandomDistributionWithNoZero(states.length - j, 1000);
-                    for (int k = 0; k < states.length - j; k++) {
-                        transitionMatrix[j][j+k] = ligne[k];
-                        transitionMatrix[j+k][j] = ligne[k];
-                    }
-                    j++;
-                }
+//                transitionMatrix = Alea.generateSymetricProbabilisMatrix(states.length, 100000);
+                transitionMatrix = Alea.generateSymetricProbabilisMatrixNotNull(states.length, 100000);
+//                int j = 0;
+//
+//                while (j < states.length) {
+//                    double somme = 1.0;
+//                    for (int i = 0; i < j; i++) {
+////                        System.out.println("transitionMatrix[j][i] : " + transitionMatrix[j][i]);
+//                        somme -= transitionMatrix[j][i];
+//                    }
+//
+////                    System.out.println("somme : " + somme);
+////                    double[] ligne = Alea.createRandomDistribution(states.length - j, 1000,somme);
+//                    double[] ligne = Alea.createRandomDistributionWithNoZero(states.length - j, 1000, somme);
+//                    for (int k = 0; k < states.length - j; k++) {
+//                        transitionMatrix[j][j + k] = ligne[k];
+//                        transitionMatrix[j + k][j] = ligne[k];
+//                    }
+//                    j++;
+//
+//                }
                 break;
             case RANDOM:
                 for (int i = 0; i < states.length; i++) {
@@ -84,13 +95,13 @@ public class MarkovChain<E> {
             default:
                 throw new Exception("type : " + type + " inconnu");
         }
-        
-        if(!Alea.isProbabilistMatrix(transitionMatrix, 0.001)){
+
+        if (!Alea.isProbabilistMatrix(transitionMatrix, 0.001)) {
             System.err.println("Ce n'est pas une matrice probabiliste");
             Myst.afficherMatrice(transitionMatrix);
             System.exit(-3);
         }
-        
+
 //        int nb_remplacement;
 //        List<Integer> donotmodifie = new ArrayList<>();
 //        /* on remplace les zeros par des epsilons */

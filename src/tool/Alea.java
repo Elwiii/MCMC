@@ -57,66 +57,92 @@ public class Alea {
         return uniforme(proba, 1 - proba) == 0;
     }
 
+    /**
+     * renvoi une distribution de probabilité de manière uniforme(todo pas sur
+     * que ce soit vraiment uniforme)
+     *
+     * @param size
+     * @param precision
+     * @return
+     */
     public static double[] createRandomDistribution(int size, int precision) {
+//        double[] distribution = new double[size];
+//        double somme = precision;
+//        while (precision > 0) {
+//            // on selectionne un indice au hasard qu'on incrémente d'un nombre au hasard
+//            int increment = rand.nextInt(precision + 1);
+//            precision -= increment;
+////            System.out.println("precision : "+precision);
+//            int ir = rand.nextInt(size);
+//            distribution[ir] += increment;
+//        }
+//
+//        for (int i = 0; i < distribution.length; i++) {
+//            distribution[i] /= somme;
+//        }
+//
+//        return distribution;
+        return createRandomDistribution(size, precision, 1);
+    }
+
+    /**
+     * tire uniformement des probabilités tel que la somme soit egale à
+     * somme_distrib
+     *
+     * @param size
+     * @param precision
+     * @param somme_distrib
+     * @return
+     */
+    public static double[] createRandomDistribution(int size, int precision, double somme_distrib) {
         double[] distribution = new double[size];
-        double somme = precision;
-        while (precision > 0) {
-            // on selectionne un indice au hasard qu'on incrémente d'un nombre au hasard
-            int increment = rand.nextInt(precision + 1);
-            precision -= increment;
+
+        if (somme_distrib > 0) {
+            double somme = precision;
+            while (precision > 0) {
+                // on selectionne un indice au hasard qu'on incrémente d'un nombre au hasard
+                int increment = rand.nextInt(precision + 1);
+                precision -= increment;
 //            System.out.println("precision : "+precision);
-            int ir = rand.nextInt(size);
-            distribution[ir] += increment;
-        }
+                int ir = rand.nextInt(size);
+                distribution[ir] += increment;
+            }
 
-        for (int i = 0; i < distribution.length; i++) {
-            distribution[i] /= somme;
+            for (int i = 0; i < distribution.length; i++) {
+                distribution[i] = somme_distrib * distribution[i] / somme;
+            }
         }
-
         return distribution;
     }
 
     public static final double EPSILON = 0.01;
-    
-    public static double[] createRandomDistributionWithNoZero(int size, int precision) {
-        double[] distribution = new double[size];
-        double somme = precision;
-        while (precision > 0) {
-            // on selectionne un indice au hasard qu'on incrémente d'un nombre au hasard
-            int increment = rand.nextInt(precision + 1);
-            precision -= increment;
-//            System.out.println("precision : "+precision);
-            int ir = rand.nextInt(size);
-            distribution[ir] += increment;
-        }
 
-        for (int i = 0; i < distribution.length; i++) {
-            distribution[i] /= somme;
-        }
-
-        int nb_remplacement;
-        List<Integer> donotmodifie = new ArrayList<>();
-        /* on remplace les zeros par des epsilons */
-        nb_remplacement = 0;
-        for (int j = 0; j < distribution.length; j++) {
-            if (distribution[j] == 0) {
-                nb_remplacement++;
-                distribution[j] = EPSILON;
-                donotmodifie.add(j);
-            }
-        }
-        if (nb_remplacement > 0) {
-            double added = donotmodifie.size() * EPSILON;
-            double toSoustract = added / (double) distribution.length;
-
+    public static double[] createRandomDistributionWithNoZero(int size, int precision, double somme_distrib) {
+        double[] distribution = createRandomDistribution(size, precision, somme_distrib);
+        if (somme_distrib > 0) {
+            int nb_remplacement;
+            List<Integer> donotmodifie = new ArrayList<>();
+            /* on remplace les zeros par des epsilons */
+            nb_remplacement = 0;
             for (int j = 0; j < distribution.length; j++) {
-                if (!donotmodifie.contains(j)) {
-                    distribution[j] -= toSoustract;
+                if (distribution[j] == 0) {
+                    nb_remplacement++;
+                    distribution[j] = EPSILON;
+                    donotmodifie.add(j);
                 }
             }
-        }
-        donotmodifie.clear();
+            if (nb_remplacement > 0) {
+                double added = donotmodifie.size() * EPSILON;
+                double toSoustract = added / (double) distribution.length;
 
+                for (int j = 0; j < distribution.length; j++) {
+                    if (!donotmodifie.contains(j)) {
+                        distribution[j] -= toSoustract;
+                    }
+                }
+            }
+            donotmodifie.clear();
+        }
         return distribution;
     }
 
@@ -158,6 +184,138 @@ public class Alea {
         return isProbabilist;
     }
 
+    public static double[][] generateSymetricProbabilisMatrix(int n, int max_par_ligne) {
+        double[][] matrix = new double[n][n];
+        // la valeur maximum que peut prendre la somme des colonnes pour chaque ligne
+        int[] max_ligne = new int[n];
+        List<Integer> lignesNonVide = new ArrayList<>();
+        for (int i = 0; i < max_ligne.length; i++) {
+            max_ligne[i] = max_par_ligne;
+            lignesNonVide.add(i);
+        }
+
+        while (!lignesNonVide.isEmpty()) {
+
+            int min = 0;
+            Integer i = lignesNonVide.get(rand.nextInt(lignesNonVide.size()));
+            Integer j = lignesNonVide.get(rand.nextInt(lignesNonVide.size()));
+            min = Math.min(max_ligne[i], max_ligne[j]);
+            int increment = rand.nextInt(min + 1);
+//            System.out.println("increment : " + increment);
+            max_ligne[i] -= increment;
+            if (i != j) {
+                max_ligne[j] -= increment;
+            }
+
+            if (max_ligne[i] == 0) {
+                lignesNonVide.remove(i);
+            }
+            if (max_ligne[j] == 0) {
+                lignesNonVide.remove(j);
+            }
+            matrix[i][j] += increment;
+            if (i != j) {
+                matrix[j][i] += increment;
+            }
+//            System.out.println("");
+//            Myst.afficherTableau(max_ligne);
+//            System.out.println("\n" + lignesNonVide + "\n");
+//            Myst.afficherMatrice(matrix);
+//            System.out.println("----------------------");
+        }
+
+        // verification , à commenter si ça fonctionne
+//        for (int i = 0; i < n; i++) {
+//            double somme = 0;
+//            for (int j = 0; j < n; j++) {
+//                somme += matrix[i][j];
+//
+//            }
+//            if (somme != max_par_ligne) {
+//                System.err.println("la somme de la ligne n'est pas egale à max_par_ligne : " + somme + " != " + max_par_ligne);
+////                    System.exit(-9);
+//            }
+//        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] /= (double) max_par_ligne;
+            }
+        }
+
+        return matrix;
+    }
+
+    public static double[][] generateSymetricProbabilisMatrixNotNull(int n, int max_par_ligne) {
+        double[][] matrix = new double[n][n];
+        int valueInit = (int) Math.pow(max_par_ligne,1./(double)max_par_ligne); // 1
+        valueInit = valueInit == 0 ? 1 : valueInit;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                matrix[i][j] = valueInit;
+            }
+            
+        }
+        max_par_ligne++;
+        // la valeur maximum que peut prendre la somme des colonnes pour chaque ligne
+        int[] max_ligne = new int[n];
+        List<Integer> lignesNonVide = new ArrayList<>();
+        for (int i = 0; i < max_ligne.length; i++) {
+            max_ligne[i] = max_par_ligne;
+            lignesNonVide.add(i);
+        }
+
+        while (!lignesNonVide.isEmpty()) {
+
+            int min = 0;
+            Integer i = lignesNonVide.get(rand.nextInt(lignesNonVide.size()));
+            Integer j = lignesNonVide.get(rand.nextInt(lignesNonVide.size()));
+            min = Math.min(max_ligne[i], max_ligne[j]);
+            int increment = rand.nextInt(min + 1);
+//            System.out.println("increment : " + increment);
+            max_ligne[i] -= increment;
+            if (i != j) {
+                max_ligne[j] -= increment;
+            }
+
+            if (max_ligne[i] == 0) {
+                lignesNonVide.remove(i);
+            }
+            if (max_ligne[j] == 0) {
+                lignesNonVide.remove(j);
+            }
+            matrix[i][j] += increment;
+            if (i != j) {
+                matrix[j][i] += increment;
+            }
+//            System.out.println("");
+//            Myst.afficherTableau(max_ligne);
+//            System.out.println("\n" + lignesNonVide + "\n");
+//            Myst.afficherMatrice(matrix);
+//            System.out.println("----------------------");
+        }
+
+        // verification , à commenter si ça fonctionne
+//        for (int i = 0; i < n; i++) {
+//            double somme = 0;
+//            for (int j = 0; j < n; j++) {
+//                somme += matrix[i][j];
+//
+//            }
+//            if (somme != max_par_ligne) {
+//                System.err.println("la somme de la ligne n'est pas egale à max_par_ligne : " + somme + " != " + max_par_ligne);
+////                    System.exit(-9);
+//            }
+//        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] /= (double) max_par_ligne;
+            }
+        }
+
+        return matrix;
+    }
     /**
      * @return the rand
      */
