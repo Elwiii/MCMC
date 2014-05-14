@@ -6,8 +6,6 @@
 package markovchain;
 
 import Jama.Matrix;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import tool.Alea;
 import tool.Myst;
@@ -164,6 +162,31 @@ public class MarkovChain<E> {
         stationary_distribution = res;
     }
 
+    public double[] getColonne(Matrix matrix, int i) {
+        double[][] tableauMatrix = matrix.getArray();
+        int nbLigne = matrix.getRowDimension();
+        double[] colonne = new double[nbLigne];
+        for (int j = 0; j < nbLigne; j++) {
+            colonne[j] = tableauMatrix[j][i];
+        }
+        return colonne;
+    }
+
+    /**
+     * Fonctionne Bien :)
+     *
+     * @param matrix
+     */
+    public double fitnessMatrix(Matrix matrix) {
+        double sommeVariance = 0;
+        for (int j = 0; j < matrix.getColumnDimension(); j++) {
+            double[] col = getColonne(matrix, j);
+            for (int i = 0; i < col.length; i++) {
+            }
+            sommeVariance = sommeVariance + Alea.variance(col);
+        }        return sommeVariance;
+    }
+
     /**
      * calcul le carré de la matrice de transition autant de fois que necessaire
      * jusqu'a trouver une distribution stationaire au critère
@@ -213,6 +236,66 @@ public class MarkovChain<E> {
         double[] res = new double[transitionMatrix.length];
         for (int j = 0; j < res.length; j++) {
             res[j] = infinite.get(0, j);
+        }
+
+        stationary_distribution = res;
+    }
+
+    /**
+     * calcul le carré de la matrice de transition autant de fois que necessaire
+     * jusqu'a trouver une distribution stationaire au critère
+     * precision_stability près.
+     *
+     * @param precision_stability
+     * @throws PeriodiqueOrReductibleMatrix
+     */
+    public void computeStationaryDistributionUntilStabilityFitness(double precision_stability, double precision_minima) throws PeriodiqueOrReductibleMatrix {
+
+        Matrix m = new Matrix(transitionMatrix);
+
+        boolean stability = false;
+        Matrix temp;
+        Matrix infinite = m.copy();
+
+        int max_time = 100000;
+        int i = 0;
+        double minimumGlobal = Double.MAX_VALUE;
+        /**
+         * on boucle tant qu'on atteint pas la stabilité
+         */
+        Matrix matrixMin = infinite.copy();
+        while (minimumGlobal > precision_minima && i < max_time) {
+            System.out.println("i : " + i);
+            Myst.afficherMatrice(infinite.getArray());
+            temp = infinite.copy();
+            infinite = infinite.times(m);//arrayTimesEquals(m);
+//            System.out.println("Myst.compareMatrix(m, temp) : "+Myst.compareMatrix(m, temp));
+            stability = (precision_stability > Myst.compareMatrix(infinite, temp));
+            if (stability) {
+                if (minimumGlobal > fitnessMatrix(infinite)) {
+                    minimumGlobal = fitnessMatrix(infinite);
+                    matrixMin = infinite.copy();
+                }
+            }
+            i++;
+        }
+
+        if (i == max_time) {
+            throw new PeriodiqueOrReductibleMatrix();
+        } else {
+//            System.out.println("Nombre de carré avant stabilité : "+(i+1));
+        }
+
+        System.out.println("res : ");
+        Myst.afficherMatrice(matrixMin.getArray());
+
+        /**
+         * on récupère la distribution stationnaire (une des lignes de la
+         * matrice)
+         */
+        double[] res = new double[transitionMatrix.length];
+        for (int j = 0; j < res.length; j++) {
+            res[j] = matrixMin.get(0, j);
         }
 
         stationary_distribution = res;
