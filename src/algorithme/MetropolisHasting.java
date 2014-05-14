@@ -151,12 +151,16 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
         Integer[] states = {0, 1, 2};//,3,4};
         double[] distribution = {0.2, 0.5, 0.3};//, 0.4, 0.1};
         int k = 0;
-        while (k < 10000000) {
+        while (k < 1/*0000000*/) {
             System.out.println("k " + k);
             AlgorithmMCMC<Integer> algo = AlgorithmFactory.getInstance().getAlgorithm(AlgorithmFactory.METROPOLIS_HASTING, states, distribution);
 
             try {
                 MarkovChain mc = algo.constructChain();
+                mc.computeStationaryDistributionUntilStabilityFitness(0.000001, 0.001);
+                double[] stationaryDistribution = mc.getStationary_distribution();
+                System.out.println(" Distrib : ");
+                Myst.afficherTableau(stationaryDistribution);
 //                System.out.println("mc resultante : " + mc);
 //            mc.computeStationaryDistributionUntilStability(0.001);
 //            System.out.println(Arrays.asList(mc.getStationary_distribution()).toString());
