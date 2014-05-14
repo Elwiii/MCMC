@@ -5,6 +5,8 @@
  */
 package tool;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -73,58 +75,94 @@ public class Alea {
 
         return distribution;
     }
+
+    public static final double EPSILON = 0.01;
     
-    
-    public static double esperance(double[] vecteur){
+    public static double[] createRandomDistributionWithNoZero(int size, int precision) {
+        double[] distribution = new double[size];
+        double somme = precision;
+        while (precision > 0) {
+            // on selectionne un indice au hasard qu'on incrémente d'un nombre au hasard
+            int increment = rand.nextInt(precision + 1);
+            precision -= increment;
+//            System.out.println("precision : "+precision);
+            int ir = rand.nextInt(size);
+            distribution[ir] += increment;
+        }
+
+        for (int i = 0; i < distribution.length; i++) {
+            distribution[i] /= somme;
+        }
+
+        int nb_remplacement;
+        List<Integer> donotmodifie = new ArrayList<>();
+        /* on remplace les zeros par des epsilons */
+        nb_remplacement = 0;
+        for (int j = 0; j < distribution.length; j++) {
+            if (distribution[j] == 0) {
+                nb_remplacement++;
+                distribution[j] = EPSILON;
+                donotmodifie.add(j);
+            }
+        }
+        if (nb_remplacement > 0) {
+            double added = donotmodifie.size() * EPSILON;
+            double toSoustract = added / (double) distribution.length;
+
+            for (int j = 0; j < distribution.length; j++) {
+                if (!donotmodifie.contains(j)) {
+                    distribution[j] -= toSoustract;
+                }
+            }
+        }
+        donotmodifie.clear();
+
+        return distribution;
+    }
+
+    public static double esperance(double[] vecteur) {
         double esperance = 0.0;
         for (int i = 0; i < vecteur.length; i++) {
             esperance += vecteur[i];
         }
-        return esperance/vecteur.length;
+        return esperance / vecteur.length;
     }
-    
-    public static double variance(double[] vecteur){
-        double variance  = 0.0 ;
+
+    public static double variance(double[] vecteur) {
+        double variance = 0.0;
         double esperance = esperance(vecteur);
         for (int i = 0; i < vecteur.length; i++) {
-            variance += Math.pow(vecteur[i] - esperance,2);
+            variance += Math.pow(vecteur[i] - esperance, 2);
         }
-        return variance/ vecteur.length;
+        return variance / vecteur.length;
     }
-    
-    public static double ecart_type(double [] vecteur){
+
+    public static double ecart_type(double[] vecteur) {
         return Math.sqrt(variance(vecteur));
     }
-    
 
     //@todo tester
-    public static boolean isProbabilistMatrix(double[][] matrix, double precision){
+    public static boolean isProbabilistMatrix(double[][] matrix, double precision) {
         boolean isProbabilist = true;
         int i = 0;
-        while(isProbabilist && i < matrix.length){
+        while (isProbabilist && i < matrix.length) {
             double somme = 0.0;
             for (int j = 0; j < matrix[i].length; j++) {
-                somme +=matrix[i][j];
-                
+                somme += matrix[i][j];
+
             }
-            isProbabilist = (Math.abs(somme-1) < precision);
+            isProbabilist = (Math.abs(somme - 1) < precision);
             i++;
         }
-        
+
         return isProbabilist;
     }
-    
-    
-    
-    
-    
+
     /**
      * @return the rand
      */
     public static Random getRand() {
         return rand;
     }
-    
-    
 
 }

@@ -6,11 +6,11 @@
 package markovchain;
 
 import Jama.Matrix;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import tool.Alea;
 import tool.Myst;
-import tool.UnconvertibleMatrixException;
 
 /**
  *
@@ -26,6 +26,8 @@ public class MarkovChain<E> {
 
     public static final double UNDEF_PROBA = -1.0;
 
+    public final double EPSILON = 0.001;
+    
     private final Random rand = new Random();
 
     /**
@@ -65,7 +67,8 @@ public class MarkovChain<E> {
             case RANDOM_SYMETRIC:
                 int j = 0;
                 while (j < states.length) {
-                    double[] ligne = Alea.createRandomDistribution(states.length - j, 1000);
+//                    double[] ligne = Alea.createRandomDistribution(states.length - j, 1000);
+                    double[] ligne = Alea.createRandomDistributionWithNoZero(states.length - j, 1000);
                     for (int k = 0; k < states.length - j; k++) {
                         transitionMatrix[j][j+k] = ligne[k];
                         transitionMatrix[j+k][j] = ligne[k];
@@ -81,6 +84,37 @@ public class MarkovChain<E> {
             default:
                 throw new Exception("type : " + type + " inconnu");
         }
+        
+        if(!Alea.isProbabilistMatrix(transitionMatrix, 0.001)){
+            System.err.println("Ce n'est pas une matrice probabiliste");
+            Myst.afficherMatrice(transitionMatrix);
+            System.exit(-3);
+        }
+        
+//        int nb_remplacement;
+//        List<Integer> donotmodifie = new ArrayList<>();
+//        /* on remplace les zeros par des epsilons */
+//        for (int i = 0; i < transitionMatrix.length; i++) {
+//            nb_remplacement = 0;
+//            for (int j = 0; j < transitionMatrix[0].length; j++) {
+//                if(transitionMatrix[i][j] == 0){
+//                    nb_remplacement ++;
+//                    transitionMatrix[i][j] = EPSILON ;
+//                    donotmodifie.add(j);
+//                }
+//            }
+//            if(nb_remplacement > 0){
+//                double added = donotmodifie.size() * EPSILON ;
+//                double toSoustract = added / (double)(transitionMatrix[0].length);
+//                
+//                for (int j = 0; j < transitionMatrix[0].length; j++) {
+//                    if(!donotmodifie.contains(j)){
+//                        transitionMatrix[i][j] -= toSoustract; 
+//                    }
+//                }
+//            }
+//            donotmodifie.clear();
+//        }
     }
 
     public void computeStationaryDistribution(int puissance, double precision) throws PeriodiqueOrReductibleMatrix {
