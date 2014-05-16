@@ -23,9 +23,12 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
 
     private double[][] transitionResultante;
 
+    private double[] tempsParEtat;
+
     public MetropolisHasting(E[] stats, double[] distribution) {
         this.stats = stats;
         this.distribution = distribution;
+        this.tempsParEtat = new double[stats.length];
     }
 
     @Override
@@ -57,13 +60,14 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
         /*int */ i = 0;
 
         double[][] transitionMatrixSimulation = mcSimulation.getTransitionMatrix();
-
+        int totalWalk = 0;
         // on boucle pour remplire la matrice de transition de mcResultante
         while (!conditionArret()) {
 //            System.out.println("----------------  " + i + "  -------------------");
             // On simule xtilte <- q(x|xi-1)
             int xtilde = mcSimulation.walk();
-
+            tempsParEtat[xtilde]++;
+            totalWalk++;
             // on calcul alpha
             double diviseur = (transitionMatrixSimulation[x_previous][xtilde] / (double) transitionMatrixSimulation[xtilde][x_previous]);
             if (Math.abs(diviseur - 1) > 0.001) {
@@ -123,6 +127,10 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
             Myst.afficherMatrice(transitionResultante);
             System.exit(-2);
         }
+        
+        for (int j = 0; j < tempsParEtat.length; j++) {
+            tempsParEtat[j] /= totalWalk;
+        }
 
 //        System.out.println(""+sampleValueIndices);
         return mcResultante;
@@ -143,24 +151,33 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
             }
         }
 
-        return i > 1000000000 || (i > 100000 && !isEqualToZero);//10000000;
+        return i > 1000000 || (i > 10000 && !isEqualToZero);//10000000;
 //        return i > 100000;
     }
 
     public static void main(String[] args) {
         Integer[] states = {0, 1, 2};//,3,4};
-        double[] distribution = {0.2, 0.5, 0.3};//, 0.4, 0.1};
+        double[] distribution = {0.05, 0.9, 0.05};//, 0.4, 0.1};
         int k = 0;
-        while (k < 1/*0000000*/) {
-            System.out.println("k " + k);
-            AlgorithmMCMC<Integer> algo = AlgorithmFactory.getInstance().getAlgorithm(AlgorithmFactory.METROPOLIS_HASTING, states, distribution);
+        double[] d_moyenne = new double[3];
+        double[] d_moyenne_temps = new double[3];
+        final int TAILLE_BOUCLE = 100;
+        while (k < TAILLE_BOUCLE) {
+//            System.out.println("k " + k);
+            AlgorithmMCMC algo = AlgorithmFactory.getInstance().getAlgorithm(AlgorithmFactory.METROPOLIS_HASTING, states, distribution);
 
             try {
                 MarkovChain mc = algo.constructChain();
                 mc.computeStationaryDistributionUntilStabilityFitness(0.000001, 0.001);
                 double[] stationaryDistribution = mc.getStationary_distribution();
-                System.out.println(" Distrib : ");
-                Myst.afficherTableau(stationaryDistribution);
+//                System.out.println(" Distrib : ");
+//                Myst.afficherTableau(stationaryDistribution);
+                for (int i = 0; i < stationaryDistribution.length; i++) {
+                    d_moyenne[i] += stationaryDistribution[i];
+                }
+                for (int i = 0; i < ((MetropolisHasting)algo).getTempsParEtat().length; i++) {
+                    d_moyenne_temps[i]+=((MetropolisHasting)algo).getTempsParEtat()[i];
+                }
 //                System.out.println("mc resultante : " + mc);
 //            mc.computeStationaryDistributionUntilStability(0.001);
 //            System.out.println(Arrays.asList(mc.getStationary_distribution()).toString());
@@ -170,6 +187,21 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
             }
             k++;
         }
+        for (int i = 0; i < d_moyenne.length; i++) {
+            d_moyenne[i] /= (double) TAILLE_BOUCLE;
+            d_moyenne_temps[i] /= (double) TAILLE_BOUCLE;
+        }
+        System.out.println("Distrib moyenne : ");
+        Myst.afficherTableau(d_moyenne);
+        System.out.println("Temps par etat moyen : ");
+        Myst.afficherTableau(d_moyenne_temps);
+    }
+
+    /**
+     * @return the tempsParEtat
+     */
+    public double[] getTempsParEtat() {
+        return tempsParEtat;
     }
 
 }

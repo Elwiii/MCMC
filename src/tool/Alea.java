@@ -65,7 +65,7 @@ public class Alea {
      * @param precision
      * @return
      */
-    public static double[] createRandomDistribution(int size, int precision) {
+    public static double[] createRandomProbabilistDistribution(int size, int precision) {
 //        double[] distribution = new double[size];
 //        double somme = precision;
 //        while (precision > 0) {
@@ -115,8 +115,43 @@ public class Alea {
         return distribution;
     }
 
+    
+    
+    public static double[] createRandomDistributionProbabilistWithNoZero(int size, int precision) {
+        double[] distribution = new double[size];
+        int minimum = (int)Math.pow(precision, 0.2);
+        for (int i = 0; i < distribution.length; i++) {
+            distribution[i] += minimum;
+        }
+        
+        double somme = precision;
+        precision -= minimum * size;
+        while (precision > 0) {
+            // on selectionne un indice au hasard qu'on incrémente d'un nombre au hasard
+            int increment = rand.nextInt(precision + 1);
+            precision -= increment;
+//            System.out.println("precision : "+precision);
+            int ir = rand.nextInt(size);
+            distribution[ir] += increment;
+        }
+
+        for (int i = 0; i < distribution.length; i++) {
+            distribution[i] = distribution[i] / somme;
+        }
+        return distribution;
+    }
+
     public static final double EPSILON = 0.01;
 
+    /**
+     * fail, renvoi des valeurs négatives
+     *
+     * @deprecated
+     * @param size
+     * @param precision
+     * @param somme_distrib
+     * @return
+     */
     public static double[] createRandomDistributionWithNoZero(int size, int precision, double somme_distrib) {
         double[] distribution = createRandomDistribution(size, precision, somme_distrib);
         if (somme_distrib > 0) {
@@ -236,7 +271,6 @@ public class Alea {
 ////                    System.exit(-9);
 //            }
 //        }
-
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 matrix[i][j] /= (double) max_par_ligne;
@@ -248,13 +282,13 @@ public class Alea {
 
     public static double[][] generateSymetricProbabilisMatrixNotNull(int n, int max_par_ligne) {
         double[][] matrix = new double[n][n];
-        int valueInit = (int) Math.pow(max_par_ligne,1./(double)max_par_ligne); // 1
+        int valueInit = (int) Math.pow(max_par_ligne, 1. / (double) max_par_ligne); // 1
         valueInit = valueInit == 0 ? 1 : valueInit;
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
                 matrix[i][j] = valueInit;
             }
-            
+
         }
         max_par_ligne++;
         // la valeur maximum que peut prendre la somme des colonnes pour chaque ligne
@@ -307,7 +341,6 @@ public class Alea {
 ////                    System.exit(-9);
 //            }
 //        }
-
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 matrix[i][j] /= (double) max_par_ligne;
@@ -316,6 +349,7 @@ public class Alea {
 
         return matrix;
     }
+
     /**
      * @return the rand
      */

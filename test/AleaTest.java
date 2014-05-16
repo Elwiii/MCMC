@@ -57,7 +57,7 @@ public class AleaTest {
             somme[i] = 0;
         }
         for (int i = 0; i < size; i++) {
-            matrix = Alea.createRandomDistribution(taille, 1000);
+            matrix = Alea.createRandomProbabilistDistribution(taille, 1000);
             for (int j = 0; j < taille; j++) {
                 somme[j] = somme[j] + matrix[j];
             }

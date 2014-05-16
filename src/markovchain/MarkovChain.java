@@ -87,7 +87,7 @@ public class MarkovChain<E> {
                 break;
             case RANDOM:
                 for (int i = 0; i < states.length; i++) {
-                    transitionMatrix[i] = Alea.createRandomDistribution(states.length, 1000);
+                    transitionMatrix[i] = Alea.createRandomProbabilistDistribution(states.length, 1000);
                 }
                 break;
             default:
@@ -211,8 +211,8 @@ public class MarkovChain<E> {
          * on boucle tant qu'on atteint pas la stabilité
          */
         while (!stability && i < max_time) {
-            System.out.println("i : " + i);
-            Myst.afficherMatrice(infinite.getArray());
+//            System.out.println("i : " + i);
+//            Myst.afficherMatrice(infinite.getArray());
             temp = infinite.copy();
             infinite = infinite.times(m);//arrayTimesEquals(m);
 //            System.out.println("Myst.compareMatrix(m, temp) : "+Myst.compareMatrix(m, temp));
@@ -226,8 +226,8 @@ public class MarkovChain<E> {
 //            System.out.println("Nombre de carré avant stabilité : "+(i+1));
         }
 
-        System.out.println("res : ");
-        Myst.afficherMatrice(infinite.getArray());
+//        System.out.println("res : ");
+//        Myst.afficherMatrice(infinite.getArray());
 
         /**
          * on récupère la distribution stationnaire (une des lignes de la
@@ -265,8 +265,8 @@ public class MarkovChain<E> {
          */
         Matrix matrixMin = infinite.copy();
         while (minimumGlobal > precision_minima && i < max_time) {
-            System.out.println("i : " + i);
-            Myst.afficherMatrice(infinite.getArray());
+//            System.out.println("i : " + i);
+//            Myst.afficherMatrice(infinite.getArray());
             temp = infinite.copy();
             infinite = infinite.times(m);//arrayTimesEquals(m);
 //            System.out.println("Myst.compareMatrix(m, temp) : "+Myst.compareMatrix(m, temp));
@@ -286,8 +286,8 @@ public class MarkovChain<E> {
 //            System.out.println("Nombre de carré avant stabilité : "+(i+1));
         }
 
-        System.out.println("res : ");
-        Myst.afficherMatrice(matrixMin.getArray());
+//        System.out.println("res : ");
+//        Myst.afficherMatrice(matrixMin.getArray());
 
         /**
          * on récupère la distribution stationnaire (une des lignes de la
