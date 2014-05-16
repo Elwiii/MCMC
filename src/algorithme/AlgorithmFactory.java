@@ -6,6 +6,8 @@
 
 package algorithme;
 
+import markovchain.MarkovChain;
+
 /**
  *
  * @author nikolai
@@ -16,6 +18,8 @@ public class AlgorithmFactory<E> {
     
     public static final int METROPOLIS_HASTING = 0;
     public static final int GIBBS = 1;
+    public static final int METROPOLIS_HASTING_SYMETRIC = 2;
+    
     
     public static AlgorithmFactory instance = null;
     
@@ -33,7 +37,7 @@ public class AlgorithmFactory<E> {
     public AlgorithmMCMC getAlgorithm(int typeAlgo,E[] states, double[] distribution){
         switch(typeAlgo){
             case METROPOLIS_HASTING :
-                return new MetropolisHasting(states, distribution);
+                return new MetropolisHasting(states, distribution,MarkovChain.RANDOM_SYMETRIC);
             case GIBBS :
                 // TODO
                 return null;

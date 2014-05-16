@@ -65,6 +65,7 @@ public class MarkovChain<E> {
             case RANDOM_SYMETRIC:
 //                transitionMatrix = Alea.generateSymetricProbabilisMatrix(states.length, 100000);
                 transitionMatrix = Alea.generateSymetricProbabilisMatrixNotNull(states.length, 100000);
+                Myst.afficherMatrice(transitionMatrix);
 //                int j = 0;
 //
 //                while (j < states.length) {
