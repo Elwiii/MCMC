@@ -9,8 +9,8 @@ package algorithme;
 import markovchain.MarkovChain;
 
 /**
- *
- * @author nikolai
+ * Singleton factory pour la création des MCMC. Voir le pattern Factory.
+ * @author CARRARA Nicolas et CHAYEM Samy
  * @param <E>
  */
 public class AlgorithmFactory<E> {
@@ -27,6 +27,10 @@ public class AlgorithmFactory<E> {
         
     }
     
+    /**
+     * récupère le singleton de cette classe.
+     * @return 
+     */
     public static AlgorithmFactory getInstance(){
         if(instance == null){
             instance = new AlgorithmFactory();
@@ -34,9 +38,21 @@ public class AlgorithmFactory<E> {
         return instance;
     }
     
+    /**
+     * Construit un algorithme du type désiré selon la distribution stationnaire
+     * théorique choisie.
+     * @param typeAlgo
+     * @param states
+     * @param distribution
+     * @return 
+     */
     public AlgorithmMCMC getAlgorithm(int typeAlgo,E[] states, double[] distribution){
         switch(typeAlgo){
             case METROPOLIS_HASTING :
+                /**
+                 * par defaut on init la matrice de transiton à random_symetric
+                 * mais faudrait améliorer ça (gaussian_symetric ...).
+                 */
                 return new MetropolisHasting(states, distribution,MarkovChain.RANDOM_SYMETRIC);
             case GIBBS :
                 // TODO

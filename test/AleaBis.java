@@ -60,14 +60,14 @@ public class AleaBis {
      
      @Test
      public void testSymetricMatrix(){
-         double[][] matrix = Alea.generateSymetricProbabilisMatrix(5, 100000);
+         double[][] matrix = Alea.generateRandomSymetricProbabilistMatrix(5, 100000);
          Myst.afficherMatrice(matrix);
          assert(Alea.isProbabilistMatrix(matrix, 0.0001));
      }
      
      @Test
      public void testSymetricMatrixNotNull(){
-         double[][] matrix = Alea.generateSymetricProbabilisMatrixNotNull(5, 100000);
+         double[][] matrix = Alea.generateRandomSymetricProbabilisMatrixNotNull(5, 100000);
          Myst.afficherMatrice(matrix);
          assert(Alea.isProbabilistMatrix(matrix, 0.0001));
      }

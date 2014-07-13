@@ -9,7 +9,7 @@ import Jama.Matrix;
 
 /**
  *
- * @author Nikolai
+ * @author CARRARA Nicolas
  */
 public class Myst {
 
@@ -31,6 +31,18 @@ public class Myst {
             }
         }
         System.out.println("");
+    }
+    
+    public static String toStringMatrix(double[][] tableau){
+        String res = "";
+         for (int j = 0; j < tableau.length; j++) {
+            res+= "\n|";
+            for (int k = 0; k < tableau[0].length; k++) {
+                res+=tableau[j][k] + "|";
+            }
+        }
+        
+        return res + "\n";
     }
     
     

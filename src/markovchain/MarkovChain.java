@@ -50,6 +50,22 @@ public class MarkovChain<E> {
         fillWithUndefTransitionMatrix();
     }
 
+    /**
+     * Marcher sur cette chaîne de markov
+     *
+     * @return l'indice du nouvel état courant
+     */
+    public int walk() {
+        double[] probas = new double[transitionMatrix[0].length];
+        System.arraycopy(transitionMatrix[currentStateIndice], 0, probas, 0, probas.length);
+//        System.out.println("colonne : " + Arrays.asList(probas));
+        return currentStateIndice = Alea.uniforme(probas);
+    }
+
+    /**
+     * Remplie la matrice de transition avec des valeurs non_defini (afin
+     * d'intialiser la matrice avec des valeurs différentes de zéro en réalité).
+     */
     private void fillWithUndefTransitionMatrix() {
         for (int i = 0; i < transitionMatrix.length; i++) {
             for (int j = 0; j < transitionMatrix[0].length; j++) {
@@ -58,13 +74,19 @@ public class MarkovChain<E> {
         }
     }
 
-    public void intializeTransitionMatrix(int type) throws Exception {
+    /**
+     * Initialise la matrice de transition.
+     *
+     * @param type type de matrice exigé : RANDOM_SYMETRIC, RANDOM ou RANDOM_GAUSSIAN
+     * @throws Exception
+     */
+    public void intializeTransitionMatrix(int type) throws MarkovChainException {
         switch (type) {
             case RANDOM_GAUSSIAN:
                 break;
             case RANDOM_SYMETRIC:
-//                transitionMatrix = Alea.generateSymetricProbabilisMatrix(states.length, 100000);
-                transitionMatrix = Alea.generateSymetricProbabilisMatrixNotNull(states.length, 100000);
+//                transitionMatrix = Alea.generateRandomSymetricProbabilistMatrix(states.length, 100000);
+                transitionMatrix = Alea.generateRandomSymetricProbabilisMatrixNotNull(states.length, 100000);
                 Myst.afficherMatrice(transitionMatrix);
 //                int j = 0;
 //
@@ -92,13 +114,14 @@ public class MarkovChain<E> {
                 }
                 break;
             default:
-                throw new Exception("type : " + type + " inconnu");
+                throw new MarkovChainException("type : " + type + " inconnu");
         }
 
         if (!Alea.isProbabilistMatrix(transitionMatrix, 0.001)) {
-            System.err.println("Ce n'est pas une matrice probabiliste");
-            Myst.afficherMatrice(transitionMatrix);
-            System.exit(-3);
+            throw new MarkovChainException(Myst.toStringMatrix(transitionMatrix) + "\nCe n'est pas une matrice probabiliste");
+//            System.err.println("Ce n'est pas une matrice probabiliste");
+//            Myst.afficherMatrice(transitionMatrix);
+//            System.exit(-3);
         }
 
 //        int nb_remplacement;
@@ -127,6 +150,14 @@ public class MarkovChain<E> {
 //        }
     }
 
+    /**
+     * Calcul la distribution stationnaire , si elle existe, de cette chaine de
+     * markov.
+     *
+     * @param puissance
+     * @param precision
+     * @throws PeriodiqueOrReductibleMatrix
+     */
     public void computeStationaryDistribution(int puissance, double precision) throws PeriodiqueOrReductibleMatrix {
         Matrix m = new Matrix(transitionMatrix);
         Matrix avantDerniereMatrice;
@@ -174,9 +205,11 @@ public class MarkovChain<E> {
     }
 
     /**
-     * Fonctionne Bien :)
+     * Calcul la valeur de fitness d'une matrice (la somme de variance des
+     * vecteurs colonnes)
      *
      * @param matrix
+     * @return
      */
     public double fitnessMatrix(Matrix matrix) {
         double sommeVariance = 0;
@@ -185,16 +218,17 @@ public class MarkovChain<E> {
             for (int i = 0; i < col.length; i++) {
             }
             sommeVariance = sommeVariance + Alea.variance(col);
-        }        return sommeVariance;
+        }
+        return sommeVariance;
     }
 
     /**
-     * calcul le carré de la matrice de transition autant de fois que necessaire
-     * jusqu'a trouver une distribution stationaire au critère
+     * Calcul la distribution stationnaire , si elle existe, de cette chaine de
+     * markov.Calcul le carré de la matrice de transition autant de fois que
+     * necessaire jusqu'a trouver une distribution stationaire au critère
      * precision_stability près.
      *
      * @param precision_stability
-     * @return
      * @throws PeriodiqueOrReductibleMatrix
      */
     public void computeStationaryDistributionUntilStability(double precision_stability) throws PeriodiqueOrReductibleMatrix {
@@ -229,7 +263,6 @@ public class MarkovChain<E> {
 
 //        System.out.println("res : ");
 //        Myst.afficherMatrice(infinite.getArray());
-
         /**
          * on récupère la distribution stationnaire (une des lignes de la
          * matrice)
@@ -243,11 +276,14 @@ public class MarkovChain<E> {
     }
 
     /**
-     * calcul le carré de la matrice de transition autant de fois que necessaire
+     * Calcul la distribution stationnaire , si elle existe, de cette chaine de
+     * markov.Calcul le carré de la matrice de transition autant de fois que
+     * necessaire (jusqu'à passer sous la precision_minima selon une fitness)
      * jusqu'a trouver une distribution stationaire au critère
      * precision_stability près.
      *
      * @param precision_stability
+     * @param precision_minima
      * @throws PeriodiqueOrReductibleMatrix
      */
     public void computeStationaryDistributionUntilStabilityFitness(double precision_stability, double precision_minima) throws PeriodiqueOrReductibleMatrix {
@@ -289,7 +325,6 @@ public class MarkovChain<E> {
 
 //        System.out.println("res : ");
 //        Myst.afficherMatrice(matrixMin.getArray());
-
         /**
          * on récupère la distribution stationnaire (une des lignes de la
          * matrice)
@@ -300,17 +335,6 @@ public class MarkovChain<E> {
         }
 
         stationary_distribution = res;
-    }
-
-    /**
-     * @todo test
-     * @return l'indice du nouvel état courant
-     */
-    public int walk() {
-        double[] probas = new double[transitionMatrix[0].length];
-        System.arraycopy(transitionMatrix[currentStateIndice], 0, probas, 0, probas.length);
-//        System.out.println("colonne : " + Arrays.asList(probas));
-        return currentStateIndice = Alea.uniforme(probas);
     }
 
     @Override
@@ -331,6 +355,7 @@ public class MarkovChain<E> {
         return res;
     }
 
+    // --------------------------- getters/setters -----------------------------
     public E getCurrentState() {
         return states[currentStateIndice];
     }

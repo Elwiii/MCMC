@@ -11,20 +11,32 @@ import tool.Alea;
 import tool.Myst;
 
 /**
- * @toto test
- * @author nikolai
+ * Cette classe implémente l'aglorithme de metropolis hasting;
+ * La matrice de transition pour la chaîne de markov de simulation
+ * ne doit pas necessairement être symétrique.
+ * Le tag @debug signifie que le code n'est la que pour débuger
+ * @author CARRARA Nicolas et CHAYEM Samy
  * @param <E>
  */
 public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
 
-    int i; // todo test condistion d'arrêt
+    int i; // todo test condition d'arrêt
 
+    /**
+     * les états sur lesquel l'algorithme a marché jusqu'alors.
+     */
     private ArrayList<Integer> sampleValueIndices;
 
     private double[][] transitionResultante;
 
+    /**
+     * fréquence de passage sur l'ensemble des états.
+     */
     private final double[] tempsParEtat;
 
+    /**
+     * Type d'intialisation pour la matrice de simulation.
+     */
     private final int typeDensiteInstrumentale;
 
     public MetropolisHasting(E[] stats, double[] distribution, int typeDensiteInstrumentale) {
@@ -123,18 +135,21 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
         mcResultante.setTransitionMatrix(transitionResultante);
 
         //@debug
-        System.out.println("" + sampleValueIndices);
+//        System.out.println("" + sampleValueIndices);
 
         /**
          * @debug on vérifie que la matrice resultante est une matrice de proba
          * (à enlever à l'avenir)
          */
         if (!Alea.isProbabilistMatrix(transitionResultante, 0.01)) {
-            System.err.print("La matrice générée n'est pas une matrice probabiliste");
-            Myst.afficherMatrice(transitionResultante);
+            System.err.print("La matrice générée n'est pas une matrice probabiliste : ");
+            System.err.println(""+Myst.toStringMatrix(transitionResultante));
             System.exit(-2);
         }
 
+        /**
+         * @debug
+         */
         for (int j = 0; j < tempsParEtat.length; j++) {
             tempsParEtat[j] /= totalWalk;
         }
@@ -157,10 +172,14 @@ public class MetropolisHasting<E> extends AlgorithmMCMC<E> {
             }
         }
 
-//        return i > 1000000 || (i > 10000 && !isEqualToZero);
-        return i > 10;
+        return i > 1000000 || (i > 10000 && !isEqualToZero);
+//        return i > 10;
     }
 
+    /**
+     * Juste pour faire des tests à la volée.
+     * @param args 
+     */
     public static void main(String[] args) {
         Integer[] states = {0, 1, 2, 3};//,3,4};
         double[] distribution = /*{0.3,0.2,0.5};//*/ {0.025, 0.025, 0.9, 0.05};//, 0.4, 0.1};

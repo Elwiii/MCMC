@@ -8,7 +8,7 @@ package markovchain;
 
 /**
  *
- * @author Nikolai
+ * @author CARRARA Nicolas et CHAYEM Samy
  */
 public class PeriodiqueOrReductibleMatrix extends Exception{
     public PeriodiqueOrReductibleMatrix() {

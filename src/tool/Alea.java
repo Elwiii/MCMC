@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Random;
 
 /**
- *
- * @author nikolai
+ * Classe fonctionnelle proposant un ensemble de fonctions rélatives
+ * à l'aléatoire
+ * @author CARRARA Nicolas et CHAYEM Samy
  */
 public class Alea {
 
@@ -24,10 +25,8 @@ public class Alea {
     /**
      * somme probas = 1 needed
      *
-     * @todo test
-     * @param probas
-     * @return l'indice i du tableau correspond à l'evenement realisé de proba
-     * probas[i]
+     * @return l'indice i du tableau corresponda,t à l'evenement realisé de 
+     * probabilité probas[i]
      */
     public static int uniforme(double... probas) {
         // TODO à revoir
@@ -49,7 +48,7 @@ public class Alea {
     }
 
     /**
-     * @todo test
+     * todo test
      * @param proba
      * @return
      */
@@ -116,7 +115,13 @@ public class Alea {
     }
 
     
-    
+    /**
+     * Creer une distribution de probalité de manière aléatoire et en faisant
+     * en sorte qu'il n'y ait aucun zéro.
+     * @param size
+     * @param precision
+     * @return 
+     */
     public static double[] createRandomDistributionProbabilistWithNoZero(int size, int precision) {
         double[] distribution = new double[size];
         int minimum = (int)Math.pow(precision, 0.2);
@@ -219,7 +224,13 @@ public class Alea {
         return isProbabilist;
     }
 
-    public static double[][] generateSymetricProbabilisMatrix(int n, int max_par_ligne) {
+    /**
+     * Genère une matrice de probabilité symétrique aléatoirement.
+     * @param n
+     * @param max_par_ligne
+     * @return 
+     */
+    public static double[][] generateRandomSymetricProbabilistMatrix(int n, int max_par_ligne) {
         double[][] matrix = new double[n][n];
         // la valeur maximum que peut prendre la somme des colonnes pour chaque ligne
         int[] max_ligne = new int[n];
@@ -280,7 +291,14 @@ public class Alea {
         return matrix;
     }
 
-    public static double[][] generateSymetricProbabilisMatrixNotNull(int n, int max_par_ligne) {
+    /**
+     * Genère une matrice de probabilité symétrique aléatoirement sans une seule
+     * valeur nulle (= zéro).
+     * @param n
+     * @param max_par_ligne
+     * @return 
+     */
+    public static double[][] generateRandomSymetricProbabilisMatrixNotNull(int n, int max_par_ligne) {
         double[][] matrix = new double[n][n];
         int valueInit = (int) Math.pow(max_par_ligne, 1. / (double) max_par_ligne); // 1
         valueInit = valueInit == 0 ? 1 : valueInit;

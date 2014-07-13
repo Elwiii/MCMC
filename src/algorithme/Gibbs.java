@@ -9,8 +9,8 @@ package algorithme;
 import markovchain.MarkovChain;
 
 /**
- *
- * @author nikolai
+ * En construction...
+ * @author CARRARA Nicolas et CHAYEM Samy
  * @param <E>
  */
 public class Gibbs<E> extends AlgorithmMCMC<E> {
