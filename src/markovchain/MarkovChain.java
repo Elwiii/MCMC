@@ -78,7 +78,7 @@ public class MarkovChain<E> {
      * Initialise la matrice de transition.
      *
      * @param type type de matrice exigé : RANDOM_SYMETRIC, RANDOM ou RANDOM_GAUSSIAN
-     * @throws Exception
+     * @throws markovchain.MarkovChainException
      */
     public void intializeTransitionMatrix(int type) throws MarkovChainException {
         switch (type) {
