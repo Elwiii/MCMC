@@ -8,11 +8,17 @@ package tool;
 import Jama.Matrix;
 
 /**
- *
+ * Ensemble hétérogène de fonctions utiles
  * @author CARRARA Nicolas
  */
 public class Myst {
 
+    /**
+     * Print une matrice partiellement sur la sortie standard
+     * @param tableau
+     * @param x longeur 
+     * @param y largueur
+     */
     public static void afficherMatrice(double[][] tableau, int x, int y) {
         for (int j = 0; j < x; j++) {
             System.out.print("\n|");
@@ -23,6 +29,10 @@ public class Myst {
         System.out.println("");
     }
     
+    /**
+     * Print une matrice complete sur la sortie standard
+     * @param tableau 
+     */
     public static void afficherMatrice(double[][] tableau) {
         for (int j = 0; j < tableau.length; j++) {
             System.out.print("\n|");
@@ -33,6 +43,11 @@ public class Myst {
         System.out.println("");
     }
     
+    /**
+     * Retourne une répresentation String de la matrice.
+     * @param tableau
+     * @return 
+     */
     public static String toStringMatrix(double[][] tableau){
         String res = "";
          for (int j = 0; j < tableau.length; j++) {
@@ -46,6 +61,10 @@ public class Myst {
     }
     
     
+    /**
+     * Print un tableau sur la sortie standard
+     * @param tab 
+     */
     public static void afficherTableau(double[] tab){
         System.out.print("|");
         for (int i = 0; i < tab.length; i++) {
@@ -54,6 +73,10 @@ public class Myst {
         System.out.println("");
     }
     
+    /**
+     * Print un tableau sur la sortie standard
+     * @param tab 
+     */
     public static void afficherTableau(int[] tab){
         System.out.print("|");
         for (int i = 0; i < tab.length; i++) {
@@ -79,7 +102,12 @@ public class Myst {
     }
     
     
-    
+    /**
+     * 
+     * @param matrix
+     * @return
+     * @throws UnconvertibleMatrixException 
+     */
     public static double[][] DoubleTodoubleMatrix(Double[][] matrix) throws UnconvertibleMatrixException{
         double[][] res = new double[matrix.length][matrix[0].length];
         
